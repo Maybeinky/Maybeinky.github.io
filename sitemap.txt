@@ -14,12 +14,12 @@ http://example.com/comment/index.html
 http://example.com/categories/index.html
 http://example.com/archive/index.html
 http://example.com/
-http://example.com/tags/STL/
 http://example.com/tags/%E7%AE%97%E6%B3%95/
 http://example.com/tags/%E5%8F%8C%E6%8C%87%E9%92%88/
+http://example.com/tags/STL/
 http://example.com/tags/%E8%AF%AD%E6%B3%95/
-http://example.com/tags/%E6%8E%92%E5%BA%8F/
 http://example.com/tags/hexo/
+http://example.com/tags/%E6%8E%92%E5%BA%8F/
 http://example.com/tags/%E9%93%BE%E8%A1%A8/
 http://example.com/categories/cpp/
 http://example.com/categories/%E5%89%8D%E7%AB%AF/
