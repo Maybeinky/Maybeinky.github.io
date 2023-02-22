@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-02-20T13:44:40.518Z</updated>
+  <updated>2023-02-22T08:20:28.203Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Tor原理以及漏洞详解~</title>
+    <link href="http://example.com/2023/02/22/Tor%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E6%BC%8F%E6%B4%9E%E8%AF%A6%E8%A7%A3/"/>
+    <id>http://example.com/2023/02/22/Tor%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E6%BC%8F%E6%B4%9E%E8%AF%A6%E8%A7%A3/</id>
+    <published>2023-02-22T08:15:26.000Z</published>
+    <updated>2023-02-22T08:20:28.203Z</updated>
+    
+    <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h3 id="Tor原理以及漏洞详解（一）"><a href="#Tor原理以及漏洞详解（一）" class="headerlink" title="Tor原理以及漏洞详解（一）"></a>Tor原理以及漏洞详解（一）</h3><p><strong>【PConline 杂谈】</strong>拥有250万日常用户的Tor网络是世界上最受互联网用户欢迎的匿名系统，十多年来，生活在监控下的人们已经习惯用Tor在电子监控和网页寄存内容中隐藏他们的浏览习惯。可以安全的从网络服务中隐藏自己一度被人们认为是具有颠覆性的。然而最近有研究人员证明Tor似乎也不是那么安全。</p><p>　　在麻省理工学院和卡塔尔计算研究所的研究人员（QCRI）已经证明在Tor上存在设计漏洞。在今年夏天的USENIX安全研讨会上，他们表示，通过分析志愿人员在独立电脑上的Tor网络上进行加密数据的传输，攻击者可以推断出隐藏<a href="https://servers.pconline.com.cn/">服务器</a>的位置，或者通过信息源找到指定的Tor用户信息。</p><p>　　谈到Tor的漏洞还是要从Tor是什么以及他的运行原理说起。</p><p>　　<strong>层层包裹的Tor</strong></p><p>　　Tor（The Onion Router，洋葱<a href="https://product.pconline.com.cn/router/">路由器</a>）由已经安装了Tor软件的电脑连接网络而成。它之所以被称为onion，是因为它的结构就跟洋葱相同，你只能看出它的外表，而想要看到核心，就必须把它层层的剥开。即每个<a href="https://product.pconline.com.cn/router/">路由</a>器间的传输都经过点对点密钥（symmetric key）来加密，形成有层次的结构。它中间所经过的各节点，都好像洋葱的一层皮，把客户端包在里面，算是保护信息来源的一种方式。</p><p>　　举个例子，假如一个Tor用户想匿名浏览《纽约时报》的头版，他的计算机将把Web请求包裹在几层加密中随机发送到另一个具有Tor功能的电脑。这台电脑被称为guard，guard在剥离掉当前第一层加密后将继续随机转发至网络中的另一台计算机，之后的计算机再剥离一层然后转发，以此循环反复。</p><p>　　整个链中的最后一台计算机，称为出口节点（exit node），剥离最后一层加密后，露出请求的真正终点：《纽约时报》。第一台计算机知道发送者的网络地址，出口知道目标站点的网络地址，但在该链中没有一台电脑知道完整的信息。这个经过层层加密的路由方案，就是Tor。</p><p><img src="/2023/02/22/Tor%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E6%BC%8F%E6%B4%9E%E8%AF%A6%E8%A7%A3/1.jpg" alt="1"></p><p>　　用 Tor 创建一条私有网络路径时，用户的软件或客户端通过网络上的中继递增地建立一条由若干加密连接组成的环路（circuit）。环路一次扩展一跳（hop），环路上的中继仅仅知道它从哪一个中继接收数据以及向哪一个中继发送数据。没有一台单独的中继会知道数据包的完整路径。客户端与环路上的每一跳都协商一组独立的密钥，这样可以保证数据通过任何一跳时都无法跟踪。</p><h3 id="Tor原理以及漏洞详解（二）"><a href="#Tor原理以及漏洞详解（二）" class="headerlink" title="Tor原理以及漏洞详解（二）"></a>Tor原理以及漏洞详解（二）</h3><p>　　除了匿名上网浏览，Tor 同样使用户能够在隐藏自身位置的前提下提供各类服务，例如 Web 发布和及时通讯<a href="https://servers.pconline.com.cn/">服务器</a>。其他 Tor 用户使用 Tor 的“聚合点”（rendezvous points）连接到这些隐匿服务，互相都不知道对方的网络标识。Tor 用户能够使用这项隐匿服务功能建立网站，人们在网站上发布资料而不用担心遭到审查。没人能够确认到底是谁在运行网站，网站的运行者也不知道到底是谁发布了资料。例如，伊朗有人创建一个网站来存放西方媒体新闻报道，但是并不想让人找到。因此他使用了Tor软件，Tor的主机电脑，用introduction points（介绍点）来满足所有想要访问这些内容的人，通过这些introduction points这个地址人们可以访问这个隐藏网络，但是却没有人能找到他的真实位置。</p><p><img src="/2023/02/22/Tor%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E6%BC%8F%E6%B4%9E%E8%AF%A6%E8%A7%A3/2.jpg" alt="2"></p><p>　　了解了Tor是什么，以及它的原理后，我们再来看看Tor是如何收到攻击的吧。</p><p>　　既然guard被随机选择，那么如果攻击者连接到Tor网络上面足够多的电脑，就有很高的几率，在某些情况下，能够成功的窥探到他们其中的一个或者几个。</p><p>　　一个电路的建立过程中，Tor网络上的计算机们将大量的来回的传递数据。研究人员发现，通过一个guard可以很简单的找到在各个方向上传递的数据包流量。利用机器学习算法，就能以99%的准确率分辨出这是一个普通的网页环路，introduction-point circuit还是一个rendezvous-point。因此并不需要打破Tor的加密。</p><p><img src="/2023/02/22/Tor%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E6%BC%8F%E6%B4%9E%E8%AF%A6%E8%A7%A3/3.jpg" alt="3"></p><p>　　此外通过使用Tor的电脑连接到一系列不同的隐藏服务，他们表明，类似于流量分析模式可以以88%的准确率确定这些服务。这意味着一个幸运的攻击者进入到了隐藏服务的guard的位置时，它将有88%的把握，确定它就是该隐藏服务的主机。</p><p>　　同样，一个幸运的间谍进入到guard位置，那么他有百分之88的准确率，发现哪些网站被用户访问过。因此环路（circuit）的指纹是Tor隐藏服务的一大隐患。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;\assets\css\APlayer.min.css&quot;&gt;&lt;script src=&quot;\assets\js\APlayer.min.js&quot; cla</summary>
+      
+    
+    
+    
+    <category term="计算机网络" scheme="http://example.com/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>上网限制和翻墙的基本原理</title>
